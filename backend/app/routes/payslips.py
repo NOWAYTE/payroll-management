@@ -25,3 +25,16 @@ def list_payslips_for_employee(emp_id):
     payslips = Payslip.query.filter_by(employee_id=emp_id).all()
     data = [{"id": p.id, "month": p.month, "gross": p.gross_salary, "deductions": p.deductions, "net": p.net_salary} for p in payslips]
     return jsonify(data), 200
+
+@payslips_bp.route("/<int:payslip_id>", methods=["GET"])
+def get_payslip(payslip_id):
+    p = Payslip.query.get_or_404(payslip_id)
+    return jsonify({
+        "id": p.id,
+        "employee_id": p.employee_id,
+        "month": p.month,
+        "gross": p.gross_salary,
+        "deductions": p.deductions,
+        "net": p.net_salary,
+        "date_generated": p.date_generated.isoformat() if hasattr(p, "date_generated") and p.date_generated else None,
+    }), 200
