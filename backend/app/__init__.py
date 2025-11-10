@@ -14,11 +14,12 @@ def create_app():
     CORS(app)
 
     # Configuration
-    app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'devkey')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv(
-        'DATABASE_URL',
-        'mysql+pymysql://root:password@127.0.0.1:3306/payroll_db'
-    )
+            'DATABASE_URL',
+            'mysql+pymysql://payrolluser:payroll123456789@127.0.0.1:3306/payroll_db'
+            )
+
+   
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
     # Init extensions
