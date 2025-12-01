@@ -10,10 +10,28 @@ migrate = Migrate()
 jwt = JWTManager()
 
 def create_app(config_name='development'):
+    # Configure logging first
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.StreamHandler(),
+            logging.FileHandler('app.log')
+        ]
+    )
+    
+    logger = logging.getLogger(__name__)
+    logger.info("=== Starting application with config: %s ===", config_name)
+    
     app = Flask(__name__)
     
     # Load configuration
     app.config.from_object(config[config_name])
+    
+    # Log loaded configuration (without sensitive data)
+    safe_config = {k: v for k, v in app.config.items() 
+                  if not any(s in k.lower() for s in ['key', 'secret', 'password'])}
+    logger.info("App config loaded: %s", safe_config)
     
     # Initialize extensions
     db.init_app(app)

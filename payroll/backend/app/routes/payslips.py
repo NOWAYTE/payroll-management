@@ -11,7 +11,8 @@ logger = logging.getLogger(__name__)
 
 payslip_bp = Blueprint('payslips', __name__, url_prefix='/api/payslips')
 
-@payslip_bp.route('', methods=['GET'])
+@payslip_bp.route('', methods=['GET'], strict_slashes=False)
+@payslip_bp.route('/', methods=['GET'])
 @jwt_required()
 def get_payslips():
     """Get payslips with filters"""
