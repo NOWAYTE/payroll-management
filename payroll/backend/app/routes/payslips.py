@@ -8,7 +8,7 @@ from io import BytesIO
 payslip_bp = Blueprint('payslips', __name__, url_prefix='/api/payslips')
 
 @payslip_bp.route('', methods=['GET'])
-@jwt_required()
+# @jwt_required()
 def get_payslips():
     """Get payslips with filters"""
     current_user_id = get_jwt_identity()
