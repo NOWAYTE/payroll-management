@@ -1,9 +1,13 @@
-from flask import Blueprint, request, jsonify, send_file
+import logging
+from flask import Blueprint, request, jsonify, send_file, current_app
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app import db
 from app.models import Payslip, User, Employee
 from app.services import PDFService
 from io import BytesIO
+
+# Set up logging
+logger = logging.getLogger(__name__)
 
 payslip_bp = Blueprint('payslips', __name__, url_prefix='/api/payslips')
 
@@ -11,11 +15,19 @@ payslip_bp = Blueprint('payslips', __name__, url_prefix='/api/payslips')
 @jwt_required()
 def get_payslips():
     """Get payslips with filters"""
+    logger.info("=== PAYSLIPS ROUTE CALLED ===")
+    logger.info(f"Request URL: {request.url}")
+    logger.info(f"Request Headers: {dict(request.headers)}")
+    
     try:
         current_user_id = get_jwt_identity()
+        logger.info(f"Current user ID from JWT: {current_user_id}")
+        
         user = User.query.get(current_user_id)
+        logger.info(f"User found: {user is not None}")
         
         if not user:
+            logger.warning(f"User not found with ID: {current_user_id}")
             return jsonify({'error': 'User not found'}), 404
             
         page = request.args.get('page', 1, type=int)
