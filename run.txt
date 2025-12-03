@@ -1,0 +1,26 @@
+To start the Flask backend server:
+cd ../Payrolld/payroll/backend && "C:/Users/petre/OneDrive/Documents/Ciatic Platforms/Payroll/Payrolld/.venv/Scripts/python.exe" run.py
+
+To install the requirements:
+cd ../payroll/backend && source venv/Scripts/activate && pip install -r requirements.txt
+
+Preliminaries:
+Installed SQL Server 9.5.0 +
+Installed Python 3.13.3
+
+
+
+How to run the Project:
+1. Install project dependencies
+2. Start both Frontend and Backend Servers
+3. Create and admin account
+4. Sign in and Add employees
+5. Create HR account
+6. Sign in and add Payroll
+7. Process a given payroll
+8. Create a respective Employee account
+9. Sign in and download payslip
+
+What you can do:
+With Payrolld, you can CRUD Employees data, the HR account processes
+the payrolls and the Employee account downloads payslip.
