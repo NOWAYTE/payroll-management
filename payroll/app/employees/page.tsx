@@ -5,9 +5,10 @@ import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import DashboardNav from "@/components/dashboard-nav"
 import EmployeeForm from "@/components/employee-form"
 import { toast } from "sonner"
+import { Trash2, Eye, PencilLine, UserSearch, UserPlus, Users, X } from 'lucide-react';
+import DashboardNav from "@/components/dashboard-nav"
 
 interface Employee {
   id: number
@@ -18,6 +19,26 @@ interface Employee {
   position: string
   phone: string
   basic_salary?: number
+  hire_date?: string
+  
+  // Personal Details
+  date_of_birth?: string
+  gender?: string
+  marital_status?: string
+  national_id?: string
+  tax_id?: string
+  address?: string
+  
+  // Emergency Contact
+  emergency_contact_name?: string
+  emergency_contact_phone?: string
+  
+  // Employment Details
+  employment_type?: string
+  
+  // Banking
+  bank_account?: string
+  bank_name?: string
 }
 
 export default function EmployeesPage() {
@@ -108,25 +129,62 @@ export default function EmployeesPage() {
   }
 
   if (isLoading) {
-    return <div className="flex items-center justify-center min-h-screen">Loading...</div>
+    return (
+      <div className="flex min-h-screen bg-slate-50">
+        <main className="flex-1 flex items-center justify-center">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-slate-600 mx-auto mb-4"></div>
+            <p className="text-slate-600 font-medium">Loading employees...</p>
+          </div>
+        </main>
+      </div>
+    )
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-50 text-black">
-      <DashboardNav />
-      <main className="flex-1">
-        <div className="container mx-auto p-8">
-          <div className="flex justify-between items-center mb-8">
-            <h1 className="text-3xl font-bold">Employees</h1>
-            <Button onClick={() => setShowForm(true)} className="bg-black text-white">Add Employee</Button>
+    <div className="flex min-h-screen bg-slate-50 text-slate-900"> 
+      <main className="flex w-full">
+        <DashboardNav />
+        <div className="flex-1 p-6 lg:p-8 h-[100vh] overflow-y-auto">
+          {/* Header */}
+          <div className="mb-8">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-3xl font-bold text-slate-900 mb-2">Employees</h1>
+                <p className="text-slate-600">Manage your workforce and employee information</p>
+              </div>
+              <Button 
+                onClick={() => setShowForm(true)} 
+                className="bg-slate-900 hover:bg-slate-800 text-white shadow-sm"
+              >
+                <UserPlus className="h-4 w-4 mr-2" />
+                Add Employee
+              </Button>
+            </div>
           </div>
 
+          {/* Employee Form */}
           {showForm && (
-            <Card className="mb-8">
-              <CardHeader>
-                <CardTitle>{editingEmployee ? "Edit Employee" : "Add New Employee"}</CardTitle>
+            <Card className="mb-6 border-slate-200 shadow-sm">
+              <CardHeader className="border-b border-slate-200 bg-slate-50">
+                <div className="flex items-center justify-between">
+                  <CardTitle className="text-slate-900">
+                    {editingEmployee ? "Edit Employee" : "Add New Employee"}
+                  </CardTitle>
+                  <Button 
+                    variant="outline" 
+                    size="sm"
+                    onClick={() => {
+                      setShowForm(false)
+                      setEditingEmployee(null)
+                    }}
+                    className="border-slate-300 text-slate-700 hover:bg-slate-100"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
               </CardHeader>
-              <CardContent>
+              <CardContent className="pt-6">
                 <EmployeeForm
                   employee={editingEmployee}
                   onClose={() => {
@@ -139,75 +197,210 @@ export default function EmployeesPage() {
             </Card>
           )}
 
-          <div className="mb-6">
-            <Input placeholder="Search employees..." value={search} onChange={(e) => setSearch(e.target.value)} />
+          {/* Stats Card */}
+          <div className="grid md:grid-cols-3 gap-4 mb-6">
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600 font-medium mb-1">Total Employees</p>
+                    <p className="text-3xl font-bold text-slate-900">{employees.length}</p>
+                  </div>
+                  <div className="bg-slate-100 rounded-full p-3">
+                    <Users className="h-6 w-6 text-slate-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+            
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600 font-medium mb-1">Departments</p>
+                    <p className="text-3xl font-bold text-slate-900">
+                      {new Set(employees.map(e => e.department).filter(Boolean)).size}
+                    </p>
+                  </div>
+                  <div className="bg-slate-100 rounded-full p-3">
+                    <Users className="h-6 w-6 text-slate-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card className="border-slate-200 shadow-sm">
+              <CardContent className="pt-6">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-sm text-slate-600 font-medium mb-1">Total Payroll</p>
+                    <p className="text-3xl font-bold text-slate-900">
+                      ${employees.reduce((sum, e) => sum + (e.basic_salary || 0), 0).toLocaleString()}
+                    </p>
+                  </div>
+                  <div className="bg-slate-100 rounded-full p-3">
+                    <Users className="h-6 w-6 text-slate-600" />
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           </div>
 
-          <div className="bg-white rounded-lg shadow overflow-hidden">
-            <table className="w-full">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">Name</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">Email</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">Employee ID</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">Department</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">Salary</th>
-                  <th className="px-6 py-3 text-left text-sm font-semibold">Actions</th>
-                </tr>
-              </thead>
-              <tbody>
-                {employees.length === 0 ? (
+          {/* Search and Filters */}
+          <Card className="mb-6 border-slate-200 shadow-sm">
+            <CardContent className="pt-6">
+              <div className="grid md:grid-cols-4 gap-4">
+                <div className="md:col-span-2">
+                  <Input 
+                    placeholder="Search employees by name, email, or ID..." 
+                    value={search} 
+                    onChange={(e) => setSearch(e.target.value)}
+                    className="w-full border-slate-300 focus:border-slate-500 focus:ring-slate-500"
+                  />
+                </div>
+                <div>
+                  <Button 
+                    onClick={() => fetchEmployees(localStorage.getItem("token")!)}
+                    variant="outline"
+                    className="w-full border-slate-300 bg-white hover:bg-slate-50 hover:border-slate-400"
+                  >
+                    <UserSearch className="h-4 w-4 mr-2"/>
+                    Search
+                  </Button>
+                </div>
+                <div>
+                  <Button 
+                    onClick={() => {
+                      setSearch("")
+                      fetchEmployees(localStorage.getItem("token")!)
+                    }}
+                    variant="outline"
+                    className="w-full border-slate-300 bg-white hover:bg-slate-100"
+                  >
+                    <X className="h-4 w-4 mr-2"/>
+                    Clear
+                  </Button>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Employees Table */}
+          <Card className="border-slate-200 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full">
+                <thead className="bg-slate-50 border-b border-slate-200">
                   <tr>
-                    <td colSpan={6} className="px-6 py-8 text-center text-gray-500">
-                      No employees found. {search ? "Try a different search term or " : ""}<button 
-                        onClick={() => setShowForm(true)} 
-                        className="text-blue-600 hover:underline"
-                      >
-                        add the first employee
-                      </button>.
-                    </td>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Name</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Email</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Employee ID</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Department</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Type</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Salary</th>
+                    <th className="px-6 py-4 text-left text-xs font-semibold text-slate-700 uppercase tracking-wider">Actions</th>
                   </tr>
-                ) : (
-                  employees.map((emp) => (
-                    <tr key={emp.id} className="border-t hover:bg-gray-50">
-                      <td className="px-6 py-4 font-medium">{emp.name}</td>
-                      <td className="px-6 py-4">{emp.email}</td>
-                      <td className="px-6 py-4">{emp.employee_id}</td>
-                      <td className="px-6 py-4">{emp.department || 'N/A'}</td>
-                      <td className="px-6 py-4">
-                        <span className="font-semibold text-green-600">
-                          ${emp.basic_salary?.toFixed(2) || "0.00"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="flex gap-2">
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => {
-                              setEditingEmployee(emp)
-                              setShowForm(true)
-                            }}
-                            className="bg-white border-gray-300"
-                          >
-                            Edit
-                          </Button>
-                          <Button 
-                            size="sm" 
-                            variant="destructive" 
-                            onClick={() => handleDelete(emp.id)}
-                            className="bg-red-600 hover:bg-red-700 text-white"
-                          >
-                            Delete
-                          </Button>
+                </thead>
+                <tbody className="bg-white divide-y divide-slate-200">
+                  {employees.length === 0 ? (
+                    <tr>
+                      <td colSpan={7} className="px-6 py-12 text-center">
+                        <div className="flex flex-col items-center justify-center">
+                          <div className="bg-slate-100 rounded-full p-6 mb-4">
+                            <Users className="h-12 w-12 text-slate-400" />
+                          </div>
+                          <h3 className="text-lg font-semibold text-slate-900 mb-2">No employees found</h3>
+                          <p className="text-slate-600 mb-4">
+                            {search ? "Try a different search term or " : "Get started by "}
+                            <button 
+                              onClick={() => setShowForm(true)} 
+                              className="text-slate-900 font-medium hover:underline"
+                            >
+                              adding your first employee
+                            </button>
+                          </p>
                         </div>
                       </td>
                     </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                  ) : (
+                    employees.map((emp) => (
+                      <tr key={emp.id} className="hover:bg-slate-50 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="flex items-center">
+                            <div className="bg-slate-100 rounded-full p-2 mr-3">
+                              <Users className="h-4 w-4 text-slate-600" />
+                            </div>
+                            <div>
+                              <p className="font-medium text-slate-900">{emp.name}</p>
+                              <p className="text-sm text-slate-500">{emp.position}</p>
+                            </div>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-700">{emp.email}</td>
+                        <td className="px-6 py-4">
+                          <span className="font-mono text-sm text-slate-700">{emp.employee_id}</span>
+                        </td>
+                        <td className="px-6 py-4 text-sm text-slate-700">{emp.department || 'N/A'}</td>
+                        <td className="px-6 py-4">
+                          <span className="inline-flex items-center px-2.5 py-0.5 rounded-md text-xs font-medium bg-slate-100 text-slate-700 border border-slate-200">
+                            {emp.employment_type || 'Not specified'}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <span className="font-semibold text-sm text-slate-900">
+                            ${emp.basic_salary?.toFixed(2) || "0.00"}
+                          </span>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => router.push(`/employees/${emp.id}`)}
+                              className="border-slate-300 hover:bg-slate-50 bg-green-500 hover:border-slate-400"
+                              title="View employee details"
+                            >
+                              <Eye className="h-4 w-4"/>
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setEditingEmployee(emp)
+                                setShowForm(true)
+                              }}
+                              className="border-slate-300 hover:bg-slate-50 bg-white hover:border-slate-400"
+                              title="Edit employee"
+                            >
+                              <PencilLine className="h-4 w-4"/>
+                            </Button>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={() => handleDelete(emp.id)}
+                              className="border-rose-300 text-rose-700 hover:bg-rose-50 bg-red-50 hover:border-rose-400"
+                              title="Delete employee"
+                            >
+                              <Trash2 className="h-4 w-4"/>
+                            </Button>
+                          </div>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </Card>
+
+          {/* Results Summary */}
+          {employees.length > 0 && (
+            <div className="mt-4 flex items-center justify-between text-sm text-slate-600">
+              <p>Showing <span className="font-medium text-slate-900">{employees.length}</span> employee{employees.length !== 1 ? 's' : ''}</p>
+              {search && (
+                <p>Search results for: <span className="font-medium text-slate-900">"{search}"</span></p>
+              )}
+            </div>
+          )}
         </div>
       </main>
     </div>

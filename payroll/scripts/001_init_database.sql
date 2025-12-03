@@ -22,9 +22,29 @@ CREATE TABLE IF NOT EXISTS employees (
   employee_id VARCHAR(50) UNIQUE NOT NULL,
   hire_date DATE,
   is_active BOOLEAN DEFAULT TRUE,
+  
+  -- Personal Details
+  date_of_birth DATE,
+  gender VARCHAR(10),
+  marital_status VARCHAR(20),
+  national_id VARCHAR(50),
+  tax_id VARCHAR(50),
+  address TEXT,
+  
+  -- Emergency Contact
+  emergency_contact_name VARCHAR(255),
+  emergency_contact_phone VARCHAR(20),
+  
+  -- Employment Details
+  employment_type VARCHAR(50),
+  
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+  INDEX idx_department (department),
+  INDEX idx_gender (gender),
+  INDEX idx_employment_type (employment_type),
+  INDEX idx_national_id (national_id)
 );
 
 -- Salaries table (basic salary and statutory fields)
